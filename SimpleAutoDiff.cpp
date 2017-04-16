@@ -15,6 +15,9 @@ namespace SAD   // Simple Automatic Differentiation
             ADV operator * (const ADV &x) const;
             friend ADV sin(const ADV &x);
             friend ADV cos(const ADV &x);
+            friend ADV log(const ADV &x, const double base);
+            friend ADV pow(const ADV &x, const double powr);
+            friend ADV exp(const ADV &x);
 
             double val;     // value of the variable
             double dval;    // derivative of the variable
@@ -61,6 +64,31 @@ namespace SAD   // Simple Automatic Differentiation
         y.dval = -std::sin(x.val) * x.dval;     // chain rule
         return y;
     }
+
+    ADV log(const ADV &x, const double base)
+    {
+        ADV y;
+        double tmp = std::log(base);
+        y.val = std::log(x.val) / tmp;
+        y.dval = 1.0 / (tmp * x.val);
+        return y;
+    }
+
+    ADV pow(const ADV &x, const double powr)
+    {
+        ADV y;
+        y.val = std::pow(x.val, powr);
+        y.dval = powr * std::pow(x.val, powr - 1);
+        return y;
+    }
+
+    ADV exp(const ADV &x)
+    {
+        ADV y;
+        y.val = std::exp(x.val);
+        y.dval = y.val;
+        return y;
+    }
 }
 
 int main()
@@ -71,12 +99,12 @@ int main()
     static const double PI = 3.1415926;
     vector<ADV> x;
 
-    x.emplace_back(PI,1);      // x = [PI, 2, 1]
+    x.emplace_back(PI,1);      // x = [(PI, 1), (2, 0), (1, 0)]
     x.emplace_back(2,0);
     x.emplace_back(1,0);
 
-    ADV y1 = cos(x[0]);
-    ADV y2 = sin(x[0]);
+    ADV y1 = exp(x[0]);
+    ADV y2 = pow(x[0], 2);
     ADV y3 = x[1] * y1;
     ADV y4 = x[2] * y2;
     ADV y5 = x[1] * y2;
@@ -92,7 +120,3 @@ int main()
     
     return 0;
 }
-
-
-
-
