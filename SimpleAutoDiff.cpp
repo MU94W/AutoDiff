@@ -19,6 +19,8 @@ namespace SAD   // Simple Automatic Differentiation
             ADV operator * (const ADV &x) const;
             friend ADV sin(const ADV &x);
             friend ADV cos(const ADV &x);
+			friend ADV sinh(const ADV &x);
+            friend ADV cosh(const ADV &x);
             friend ADV log(const ADV &x, const double base);
             friend ADV pow(const ADV &x, const double powr);
             friend ADV exp(const ADV &x);
