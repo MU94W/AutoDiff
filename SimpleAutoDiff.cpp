@@ -2,6 +2,10 @@
 #include <vector>
 #include <iostream>
 
+#ifndef M_PI
+#define M_PI std::acos(-1.)
+#endif
+
 namespace SAD   // Simple Automatic Differentiation
 {
     class ADV
@@ -15,9 +19,12 @@ namespace SAD   // Simple Automatic Differentiation
             ADV operator * (const ADV &x) const;
             friend ADV sin(const ADV &x);
             friend ADV cos(const ADV &x);
+			friend ADV sinh(const ADV &x);
+            friend ADV cosh(const ADV &x);
             friend ADV log(const ADV &x, const double base);
             friend ADV pow(const ADV &x, const double powr);
             friend ADV exp(const ADV &x);
+			friend ADV erf(const ADV &x);
 
             double val;     // value of the variable
             double dval;    // derivative of the variable
@@ -64,6 +71,22 @@ namespace SAD   // Simple Automatic Differentiation
         y.dval = -std::sin(x.val) * x.dval;     // chain rule
         return y;
     }
+	
+	ADV sinh(const ADV &x)
+    {
+        ADV y;
+        y.val = std::sinh(x.val);
+        y.dval = std::cosh(x.val) * x.dval;      // chain rule
+        return y;
+    }
+
+    ADV cosh(const ADV &x)
+    {
+        ADV y;
+        y.val = std::cosh(x.val);
+        y.dval = std::sinh(x.val) * x.dval;     // chain rule
+        return y;
+    }
 
     ADV log(const ADV &x, const double base)
     {
@@ -89,6 +112,14 @@ namespace SAD   // Simple Automatic Differentiation
         y.dval = y.val * x.dval;    // chain rule
         return y;
     }
+	
+	ADV erf(const ADV &x)
+    {
+        ADV y;
+        y.val = std::erf(x.val);
+        y.dval = std::exp(-1.0*y.val*y.val)*2.0/std::sqrt(M_PI);
+        return y;
+    }
 }
 
 int main()
@@ -96,10 +127,9 @@ int main()
     using namespace SAD;
     using namespace std;
 
-    static const double PI = 3.1415926;
     vector<ADV> x;
 
-    x.emplace_back(PI,1);      // x = [(PI, 1), (2, 0), (1, 0)]
+    x.emplace_back(M_PI,1);      // x = [(PI, 1), (2, 0), (1, 0)]
     x.emplace_back(2,0);
     x.emplace_back(1,0);
 
