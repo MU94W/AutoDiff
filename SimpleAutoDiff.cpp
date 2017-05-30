@@ -70,7 +70,7 @@ namespace SAD   // Simple Automatic Differentiation
         ADV y;
         double tmp = std::log(base);
         y.val = std::log(x.val) / tmp;
-        y.dval = 1.0 / (tmp * x.val);
+        y.dval = 1.0 / (tmp * x.val) * x.dval;  // chain rule
         return y;
     }
 
@@ -78,7 +78,7 @@ namespace SAD   // Simple Automatic Differentiation
     {
         ADV y;
         y.val = std::pow(x.val, powr);
-        y.dval = powr * std::pow(x.val, powr - 1);
+        y.dval = powr * std::pow(x.val, powr - 1) * x.dval;     // chain rule
         return y;
     }
 
@@ -86,7 +86,7 @@ namespace SAD   // Simple Automatic Differentiation
     {
         ADV y;
         y.val = std::exp(x.val);
-        y.dval = y.val;
+        y.dval = y.val * x.dval;    // chain rule
         return y;
     }
 }
